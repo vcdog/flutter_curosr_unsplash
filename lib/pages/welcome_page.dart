@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/unsplash_image.dart';
 import '../services/unsplash_service.dart';
 import '../services/preferences_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class WelcomePage extends StatefulWidget {
   final PreferencesService preferencesService;
@@ -78,7 +79,17 @@ class _WelcomePageState extends State<WelcomePage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
                       'Photo by ${_currentImage!.photographerName} on Unsplash',
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(1, 1),
+                            blurRadius: 3,
+                            color: Colors.black45,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
@@ -86,13 +97,26 @@ class _WelcomePageState extends State<WelcomePage> {
                 Padding(
                   padding: const EdgeInsets.all(32.0),
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black87,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                     onPressed: () async {
                       await widget.preferencesService.setWelcomeShown(true);
                       if (mounted) {
                         Navigator.of(context).pushReplacementNamed('/home');
                       }
                     },
-                    child: const Text('开始使用'),
+                    child: const Text(
+                      '开始使用',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
@@ -105,12 +129,19 @@ class _WelcomePageState extends State<WelcomePage> {
 
   Widget _buildBackground() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Container(
+        color: Colors.black12,
+        child: const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        ),
+      );
     }
 
     if (_error != null || _currentImage == null) {
-      return Image.asset(
-        'assets/default_background.jpg',
+      return SvgPicture.asset(
+        'assets/default_background.svg',
         fit: BoxFit.cover,
       );
     }
@@ -123,8 +154,8 @@ class _WelcomePageState extends State<WelcomePage> {
         return const Center(child: CircularProgressIndicator());
       },
       errorBuilder: (context, error, stackTrace) {
-        return Image.asset(
-          'assets/default_background.jpg',
+        return SvgPicture.asset(
+          'assets/default_background.svg',
           fit: BoxFit.cover,
         );
       },

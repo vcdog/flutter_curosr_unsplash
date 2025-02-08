@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'services/preferences_service.dart';
 import 'pages/welcome_page.dart';
 import 'pages/home_page.dart';
@@ -20,20 +20,26 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // 关闭debug标签
-      home: FutureBuilder<bool>(
-        future: preferencesService.isWelcomeShown(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final bool welcomeShown = snapshot.data ?? false;
-          return welcomeShown
-              ? const HomePage()
-              : WelcomePage(preferencesService: preferencesService);
-        },
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      routes: {
+        '/': (context) => FutureBuilder<bool>(
+              future: preferencesService.isWelcomeShown(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final bool welcomeShown = snapshot.data ?? false;
+                return welcomeShown
+                    ? const HomePage()
+                    : WelcomePage(preferencesService: preferencesService);
+              },
+            ),
+        '/home': (context) => const HomePage(),
+      },
     );
   }
 }
